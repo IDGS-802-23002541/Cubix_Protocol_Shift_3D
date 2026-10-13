@@ -1,0 +1,27 @@
+[gd_scene format=3 uid="uid://dlws0ywqil0f4"]
+
+[ext_resource type="Material" uid="uid://dygvxncnffggs" path="res://materiales/mat_stderr.tres" id="1_2lnyp"]
+[ext_resource type="Script" uid="uid://dhwjyp3grnpu8" path="res://escenas/muro_purga.gd" id="1_2r58r"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_yjwvb"]
+size = Vector3(30, 15, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_yjwvb"]
+size = Vector3(30, 15, 1)
+
+[node name="MuroPurga" type="Area3D" unique_id=192116]
+collision_layer = 0
+script = ExtResource("1_2r58r")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=59503997]
+mesh = SubResource("BoxMesh_yjwvb")
+surface_material_override/0 = ExtResource("1_2lnyp")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1742005922]
+shape = SubResource("BoxShape3D_yjwvb")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="." unique_id=214685640]
+light_color = Color(1, 0.33333334, 0, 1)
+omni_range = 20.0
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

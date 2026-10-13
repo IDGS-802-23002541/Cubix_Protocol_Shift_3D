@@ -1,0 +1,32 @@
+[gd_scene format=3 uid="uid://cjohunpi7o8wd"]
+
+[ext_resource type="Script" uid="uid://debw786cm6epv" path="res://escenas/cu206_movimiento.gd" id="1_ajud3"]
+[ext_resource type="Material" uid="uid://dmop26lvfngvg" path="res://materiales/mat_normal.tres" id="2_8khb7"]
+[ext_resource type="Material" uid="uid://be8didj5k6h3v" path="res://materiales/mat_stdin.tres" id="3_m1gkt"]
+[ext_resource type="Material" uid="uid://q2ib0l8knqhb" path="res://materiales/mat_stdout.tres" id="4_jeoxs"]
+[ext_resource type="Material" uid="uid://dygvxncnffggs" path="res://materiales/mat_stderr.tres" id="5_n4mv5"]
+[ext_resource type="PackedScene" uid="uid://c1mjm530w4x1x" path="res://escenas/HUD.tscn" id="6_m1gkt"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_yjwvb"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_yjwvb"]
+
+[node name="CU-206" type="Node3D" unique_id=218296860]
+
+[node name="CharacterBody3D" type="CharacterBody3D" parent="." unique_id=2013852269]
+script = ExtResource("1_ajud3")
+mat_normal = ExtResource("2_8khb7")
+mat_stdin = ExtResource("3_m1gkt")
+mat_stdout = ExtResource("4_jeoxs")
+mat_stderr = ExtResource("5_n4mv5")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="CharacterBody3D" unique_id=1060400359]
+mesh = SubResource("BoxMesh_yjwvb")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D" unique_id=633104056]
+shape = SubResource("BoxShape3D_yjwvb")
+
+[node name="Camera3D" type="Camera3D" parent="CharacterBody3D" unique_id=667103170]
+transform = Transform3D(1, 0, 0, 0, 0.9396926, 0.34202012, 0, -0.34202012, 0.9396926, 0, 3.5, 6)
+
+[node name="CanvasLayer" parent="." unique_id=587709777 instance=ExtResource("6_m1gkt")]

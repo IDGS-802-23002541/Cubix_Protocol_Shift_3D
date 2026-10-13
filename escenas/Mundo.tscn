@@ -1,0 +1,74 @@
+[gd_scene format=3 uid="uid://choc8envps0y3"]
+
+[ext_resource type="PackedScene" uid="uid://cjohunpi7o8wd" path="res://escenas/CU206.tscn" id="1_h3ccx"]
+[ext_resource type="Material" uid="uid://be8didj5k6h3v" path="res://materiales/mat_stdin.tres" id="2_afu8k"]
+[ext_resource type="PackedScene" uid="uid://1l1c3moh571o" path="res://escenas/GlitchPyramid.tscn" id="3_0nm1d"]
+[ext_resource type="PackedScene" uid="uid://dlws0ywqil0f4" path="res://escenas/MuroPurga.tscn" id="4_ypkjc"]
+
+[sub_resource type="Environment" id="Environment_yjwvb"]
+background_mode = 1
+glow_enabled = true
+glow_normalized = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ajud3"]
+albedo_color = Color(0.22109202, 0.20449966, 0.2106561, 1)
+metallic_specular = 0.87
+roughness_texture_channel = 2
+
+[sub_resource type="BoxMesh" id="BoxMesh_i5bll"]
+material = SubResource("StandardMaterial3D_ajud3")
+size = Vector3(15, 1, 500)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_yjwvb"]
+size = Vector3(15, 1, 500)
+
+[sub_resource type="BoxMesh" id="BoxMesh_yjwvb"]
+size = Vector3(3, 4, 0.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_i5bll"]
+size = Vector3(3, 4, 0.5)
+
+[node name="Node3D" type="Node3D" unique_id=1535453160]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=2044849594]
+environment = SubResource("Environment_yjwvb")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=538070139]
+transform = Transform3D(0.9624832, -0.14619024, 0.22859247, 3.862651e-08, 0.8424537, 0.53876877, -0.2713413, -0.5185559, 0.8108476, 0, 2.9157255, 2.5527678)
+
+[node name="Piso" type="StaticBody3D" parent="." unique_id=1436583674]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.25181293, 0.64667773, -29.440556)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Piso" unique_id=1967534873]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.027875423, -4.7683716e-07, -212.63928)
+custom_aabb = AABB(0, 0, 0, 15, 0, 0)
+mesh = SubResource("BoxMesh_i5bll")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Piso" unique_id=1584816484]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -212.37695)
+shape = SubResource("BoxShape3D_yjwvb")
+
+[node name="CU-206" parent="." unique_id=218296860 instance=ExtResource("1_h3ccx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+
+[node name="MuroVerde" type="StaticBody3D" parent="." unique_id=1524320705]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -40)
+collision_layer = 2
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="MuroVerde" unique_id=1641833143]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
+mesh = SubResource("BoxMesh_yjwvb")
+surface_material_override/0 = ExtResource("2_afu8k")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MuroVerde" unique_id=1217651019]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
+shape = SubResource("BoxShape3D_i5bll")
+
+[node name="GlitchPyramid" parent="." unique_id=311705416 instance=ExtResource("3_0nm1d")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -60)
+
+[node name="GlitchPyramid2" parent="." unique_id=1915581657 instance=ExtResource("3_0nm1d")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -100)
+
+[node name="MuroPurga" parent="." unique_id=192116 instance=ExtResource("4_ypkjc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 10)

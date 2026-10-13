@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://1l1c3moh571o"]
+
+[ext_resource type="Material" uid="uid://dygvxncnffggs" path="res://materiales/mat_stderr.tres" id="1_pnkud"]
+[ext_resource type="Script" uid="uid://dmgilq5c4gd2g" path="res://escenas/glitch_pyramid.gd" id="1_v8iva"]
+
+[sub_resource type="PrismMesh" id="PrismMesh_yjwvb"]
+size = Vector3(2, 2, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_h735q"]
+size = Vector3(2, 2, 2)
+
+[node name="GlitchPyramid" type="Area3D" unique_id=311705416]
+collision_layer = 8
+script = ExtResource("1_v8iva")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1837568713]
+mesh = SubResource("PrismMesh_yjwvb")
+surface_material_override/0 = ExtResource("1_pnkud")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1659231445]
+shape = SubResource("BoxShape3D_h735q")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

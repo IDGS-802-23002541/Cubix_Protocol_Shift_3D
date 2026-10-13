@@ -1,0 +1,27 @@
+[gd_scene format=3 uid="uid://c1mjm530w4x1x"]
+
+[ext_resource type="Script" uid="uid://i18bwrgsyuwj" path="res://escenas/hud.gd" id="1_adsit"]
+
+[node name="CanvasLayer" type="CanvasLayer" unique_id=587709777]
+script = ExtResource("1_adsit")
+
+[node name="UIBase" type="Control" parent="." unique_id=41105750]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="LabelFase" type="Label" parent="UIBase" unique_id=375775680]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 609.0
+offset_right = 265.0
+offset_bottom = 643.0
+theme_override_font_sizes/font_size = 24
+text = "FASE: NORMAL [AZUL]"
+
+[node name="LabelEstado" type="Label" parent="UIBase" unique_id=1094652365]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+text = "SISTEMA: OK"
