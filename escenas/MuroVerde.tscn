@@ -4,10 +4,10 @@
 [ext_resource type="Script" uid="uid://bcy3yjec5b3j0" path="res://escenas/muro_verde.gd" id="1_wwbb6"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_yjwvb"]
-size = Vector3(3, 4, 0.5)
+size = Vector3(14, 4, 0.5)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_i5bll"]
-size = Vector3(3, 4, 0.5)
+size = Vector3(14, 4, 0.5)
 
 [node name="MuroVerde" type="StaticBody3D" unique_id=638202237]
 collision_layer = 2

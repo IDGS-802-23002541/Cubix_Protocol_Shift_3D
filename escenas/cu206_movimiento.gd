@@ -1,6 +1,6 @@
 # Nombre archivo: cu206_movimiento 
-# Versión: v1.3
-# Descripción: Referencia del HUD
+# Versión: v1.4
+# Descripción: Referencia del HUD (suma de puntaje)
 # Autor: Aideé Vanessa Casillas Tapia
 
 extends CharacterBody3D
@@ -8,7 +8,7 @@ extends CharacterBody3D
 # Variables configurables desde el Inspector
 @export_group("Movimiento")
 @export var forward_speed: float = 12.0     # Velocidad constante de avance
-@export var lane_distance: float = 3.0      # Distancia entre carriles (eje X)
+@export var lane_distance: float = 4.5     # Distancia entre carriles (eje X)
 @export var lane_change_speed: float = 15.0 # Velocidad de cambio de carril
 @export var jump_velocity: float = 8.0      # Fuerza de salto
 
@@ -22,9 +22,11 @@ extends CharacterBody3D
 # Enum para los estados/fases
 enum Phase { NORMAL, STDIN, STDOUT, STDERR }
 var current_phase: Phase = Phase.NORMAL
+var score: int = 0
 
 @export_group("Mecánica Overclock")
 @export var boost_speed: float = 22.0       # Velocidad durante Overclock Boost
+var current_speed: float = 12.0
 
 # Estado interno
 var current_lane: int = 0  # -1: Izquierda, 0: Centro, 1: Derecha
@@ -37,10 +39,36 @@ func _ready() -> void:
 	# Establecer material inicial
 	set_phase(Phase.NORMAL)
 
+func add_score(amount: int) -> void:
+	print("¡Algo tocó al DataBit: ")
+	score += amount
+	# Actualizar HUD si existe referencia
+	if hud and hud.has_method("update_score"):
+		hud.update_score(score)
+	print("Puntaje actual: ", score)
+
+# Función que se ejecuta al chocar con un obstáculo letal
+func take_damage() -> void:
+	print("¡COLISIÓN CRÍTICA! Sistema comprometido.")
+	
+	# Opcional: Detener movimiento o aplicar efecto visual
+	set_physics_process(false)
+	
+	# Reiniciar la escena actual después de 1 segundo (o mostrar pantalla de Game Over)
+	get_tree().call_deferred("reload_current_scene")
+
 func _physics_process(delta: float) -> void:
+	if Input.is_action_pressed("ui_accept") or Input.is_key_pressed(KEY_SHIFT):
+		current_speed = boost_speed
+		# Aquí podrías cambiar temporalmente el campo visual o activar efectos de estela neón
+	else:
+		current_speed = forward_speed
+		
 	# 1. Aplicar Gravedad si está en el aire
 	if not is_on_floor():
 		velocity.y -= gravity * delta
+		
+	velocity.z = -current_speed
 
 	# 2. Entrada de Usuario - Cambio de Carriles (Izquierda / Derecha)
 	if Input.is_action_just_pressed("ui_left") and current_lane > -1:

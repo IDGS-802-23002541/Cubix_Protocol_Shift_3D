@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://2drymlk00lej" path="res://escenas/bloque_pista.gd" id="1_u4347"]
 [ext_resource type="PackedScene" uid="uid://dowr7bhqwnvvw" path="res://escenas/MuroVerde.tscn" id="2_62wci"]
 [ext_resource type="PackedScene" uid="uid://1l1c3moh571o" path="res://escenas/GlitchPyramid.tscn" id="2_pmfpd"]
+[ext_resource type="PackedScene" uid="uid://fpbmvot065c8" path="res://escenas/DataBit.tscn" id="4_tpq44"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_yjwvb"]
 size = Vector3(15, 1, 25)
@@ -14,6 +15,7 @@ size = Vector3(15, 1, 25)
 script = ExtResource("1_u4347")
 pared_verde_scene = ExtResource("2_62wci")
 piramide_scene = ExtResource("2_pmfpd")
+databit_scene = ExtResource("4_tpq44")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="." unique_id=169735762]
 
@@ -24,10 +26,10 @@ mesh = SubResource("BoxMesh_yjwvb")
 shape = SubResource("BoxShape3D_i5bll")
 
 [node name="PuntoIzq" type="Marker3D" parent="." unique_id=769397169]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 1, -10)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 1, -10)
 
 [node name="PuntoCentro" type="Marker3D" parent="." unique_id=625219962]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -10)
 
 [node name="PuntoDr" type="Marker3D" parent="." unique_id=220068014]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 1, -10)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 1, -10)

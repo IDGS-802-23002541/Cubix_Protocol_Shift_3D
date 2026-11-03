@@ -15,4 +15,5 @@ func _on_body_entered(body: Node3D) -> void:
 		else:
 			# Si está en cualquier otro color (Normal, Verde, Magenta), el jugador pierde/reinicia
 			print("¡CU-206 sufrio un error critico por Malware!")
-			get_tree().reload_current_scene() # Reinicia el nivel
+			# Diferido: no se puede liberar/recargar durante el callback de física
+			get_tree().call_deferred("reload_current_scene") # Reinicia el nivel

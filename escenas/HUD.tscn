@@ -22,6 +22,17 @@ text = "FASE: NORMAL [AZUL]"
 
 [node name="LabelEstado" type="Label" parent="UIBase" unique_id=1094652365]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
+offset_left = 6.0
+offset_top = 4.0
+offset_right = 104.0
+offset_bottom = 27.0
 text = "SISTEMA: OK"
+
+[node name="LabelPuntaje" type="Label" parent="UIBase" unique_id=227326986]
+layout_mode = 0
+offset_left = 972.0
+offset_top = 7.0
+offset_right = 1150.0
+offset_bottom = 52.0
+theme_override_font_sizes/font_size = 26
+text = "PUNTOS: 0"

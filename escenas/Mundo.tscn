@@ -27,4 +27,4 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 10)
 [node name="TrackManager" type="Node3D" parent="." unique_id=2082842825 node_paths=PackedStringArray("player")]
 script = ExtResource("5_hf2qs")
 block_scene = ExtResource("4_hf2qs")
-player = NodePath("../CU-206")
+player = NodePath("../CU-206/CharacterBody3D")

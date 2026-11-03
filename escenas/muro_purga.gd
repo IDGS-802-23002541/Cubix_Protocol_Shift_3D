@@ -16,4 +16,5 @@ func _physics_process(delta: float) -> void:
 func _on_body_entered(body: Node3D) -> void:
 	if body.has_method("set_phase"):
 		print("¡CU-206 fue alcanzado por la Purga del Virus T!")
-		get_tree().reload_current_scene() # Reinicia el nivel
+		# Diferido: no se puede recargar la escena durante el callback de física
+		get_tree().call_deferred("reload_current_scene") # Reinicia el nivel

@@ -13,7 +13,7 @@
 
 [node name="CU-206" type="Node3D" unique_id=218296860]
 
-[node name="CharacterBody3D" type="CharacterBody3D" parent="." unique_id=2013852269]
+[node name="CharacterBody3D" type="CharacterBody3D" parent="." unique_id=2013852269 groups=["player"]]
 script = ExtResource("1_ajud3")
 mat_normal = ExtResource("2_8khb7")
 mat_stdin = ExtResource("3_m1gkt")
