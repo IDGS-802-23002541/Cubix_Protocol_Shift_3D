@@ -1,154 +1,168 @@
-# Nombre archivo: cu206_movimiento 
-# Versión: v1.4
-# Descripción: Referencia del HUD (suma de puntaje)
+# Nombre archivo: cu206_movimiento
+# Versión: v2.0
+# Descripción: Ordenado y optimizado con sistema de vidas y fases
 # Autor: Aideé Vanessa Casillas Tapia
 
 extends CharacterBody3D
 
-# Variables configurables desde el Inspector
-@export_group("Movimiento")
+@export_group("Movimiento y Velocidad")
 @export var forward_speed: float = 12.0     # Velocidad constante de avance
-@export var lane_distance: float = 4.5     # Distancia entre carriles (eje X)
-@export var lane_change_speed: float = 15.0 # Velocidad de cambio de carril
+@export var boost_speed: float = 22.0       # Velocidad durante Overclock Boost
+@export var lane_distance: float = 4.5      # Distancia entre carriles (eje X)
+@export var lane_change_speed: float = 15.0 # Velocidad de transición entre carriles
 @export var jump_velocity: float = 8.0      # Fuerza de salto
 
-# --- RECURSOS DE MATERIALES (Pre-cargados) ---
+@export_group("Sistema de Juego")
+@export var max_health: int = 3             # Vidas máximas del jugador
+@export var max_emp_energy: float = 100.0   # Energía máxima para pulso EMP
+
 @export_group("Materiales de Fases")
 @export var mat_normal: Material
 @export var mat_stdin: Material
 @export var mat_stdout: Material
 @export var mat_stderr: Material
 
-# Enum para los estados/fases
 enum Phase { NORMAL, STDIN, STDOUT, STDERR }
 var current_phase: Phase = Phase.NORMAL
+
 var score: int = 0
+var current_health: int = 3
+var emp_energy: float = 0.0                 # Energía acumulada por RAM Bits para EMP
 
-@export_group("Mecánica Overclock")
-@export var boost_speed: float = 22.0       # Velocidad durante Overclock Boost
 var current_speed: float = 12.0
-
-# Estado interno
-var current_lane: int = 0  # -1: Izquierda, 0: Centro, 1: Derecha
+var current_lane: int = 0                   # -1: Izquierda, 0: Centro, 1: Derecha
 var target_x: float = 0.0
 var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 
 @onready var mesh_node: MeshInstance3D = $MeshInstance3D
+@onready var hud: CanvasLayer = $HUD
 
+# CICLO DE VIDA (READY & PHYSICS_PROCESS)
 func _ready() -> void:
-	# Establecer material inicial
+	# Inicializar estados al arrancar
 	set_phase(Phase.NORMAL)
-
-func add_score(amount: int) -> void:
-	print("¡Algo tocó al DataBit: ")
-	score += amount
-	# Actualizar HUD si existe referencia
-	if hud and hud.has_method("update_score"):
-		hud.update_score(score)
-	print("Puntaje actual: ", score)
-
-# Función que se ejecuta al chocar con un obstáculo letal
-func take_damage() -> void:
-	print("¡COLISIÓN CRÍTICA! Sistema comprometido.")
-	
-	# Opcional: Detener movimiento o aplicar efecto visual
-	set_physics_process(false)
-	
-	# Reiniciar la escena actual después de 1 segundo (o mostrar pantalla de Game Over)
-	get_tree().call_deferred("reload_current_scene")
+	current_health = max_health
+	update_hud_display()
 
 func _physics_process(delta: float) -> void:
+	# 1. Control de Velocidad (Overclock Boost con Shift o ui_accept)
 	if Input.is_action_pressed("ui_accept") or Input.is_key_pressed(KEY_SHIFT):
 		current_speed = boost_speed
-		# Aquí podrías cambiar temporalmente el campo visual o activar efectos de estela neón
 	else:
 		current_speed = forward_speed
 		
-	# 1. Aplicar Gravedad si está en el aire
+	# 2. Aplicar Gravedad si está en el aire
 	if not is_on_floor():
 		velocity.y -= gravity * delta
-		
-	velocity.z = -current_speed
 
-	# 2. Entrada de Usuario - Cambio de Carriles (Izquierda / Derecha)
+	# 3. Entrada de Usuario - Cambio de Carriles (Izquierda / Derecha)
 	if Input.is_action_just_pressed("ui_left") and current_lane > -1:
 		current_lane -= 1
 	elif Input.is_action_just_pressed("ui_right") and current_lane < 1:
 		current_lane += 1
 
-	# Calcular posición X objetivo según el carril activo
+	# Interpolar suavemente la posición X hacia el carril objetivo
 	target_x = current_lane * lane_distance
-	
-	# Interpolar suavemente la posición X actual hacia el carril objetivo
 	var current_pos = global_position
 	current_pos.x = move_toward(current_pos.x, target_x, lane_change_speed * delta)
 	global_position.x = current_pos.x
-	
-	# 3. Controles de Fases (Teclas 1, 2, 3 o Teclas A, S, D)
-	if Input.is_key_pressed(KEY_1):
-		set_phase(Phase.NORMAL)
-	elif Input.is_key_pressed(KEY_2):
-		set_phase(Phase.STDIN)   # Fase Verde
-	elif Input.is_key_pressed(KEY_3):
-		set_phase(Phase.STDOUT)  # Fase Magenta
-	elif Input.is_key_pressed(KEY_4):
-		set_phase(Phase.STDERR)  # Fase Naranja
 
 	# 4. Entrada de Usuario - Salto
 	if Input.is_action_just_pressed("ui_accept") and is_on_floor():
 		velocity.y = jump_velocity
 
-	# 5. Entrada de Usuario - Overclock Boost (Mantener SHIFT / Tecla Aceptar)
-	var active_speed = forward_speed
-	if Input.is_action_pressed("ui_focus_next"): # Por defecto la tecla Tab/Shift
-		active_speed = boost_speed
+	# 5. Controles de Fases (Teclas 1, 2, 3, 4)
+	if Input.is_key_pressed(KEY_1):
+		set_phase(Phase.NORMAL)
+	elif Input.is_key_pressed(KEY_2):
+		set_phase(Phase.STDIN)   # Fase Verde (Alfa)
+	elif Input.is_key_pressed(KEY_3):
+		set_phase(Phase.STDOUT)  # Fase Magenta (Beta)
+	elif Input.is_key_pressed(KEY_4):
+		set_phase(Phase.STDERR)  # Fase Naranja (Gamma)
 
-	# 5. Avance constante hacia adelante (eje -Z en Godot)
-	velocity.z = -active_speed
-	mesh_node.rotate_x(-active_speed * delta * 0.2)
+	# 6. Avance constante hacia adelante (eje -Z) y rotación estética del cubo
+	velocity.z = -current_speed
+	if mesh_node:
+		mesh_node.rotate_x(-current_speed * delta * 0.2)
 	
-	# Executar movimiento de físicas en Godot 4
+	# Ejecutar movimiento físico en Godot 4
 	move_and_slide()
 
-@onready var hud: CanvasLayer = $HUD 
+# SISTEMA DE PUNTANAJE, VIDAS Y ENERGÍA EMP
+func add_score(amount: int) -> void:
+	score += amount
+	
+	# Acumular energía EMP opcionalmente con los coleccionables (RAM Bits)
+	emp_energy = min(emp_energy + 10.0, max_emp_energy)
+	
+	if hud and hud.has_method("update_score"):
+		hud.update_score(score)
+		
+	print("Puntaje actual: ", score, " | Energía EMP: ", emp_energy)
 
-# --- LÓGICA DE CAMBIO DE FASES Y FÍSICAS ---
+func take_damage() -> void:
+	# Evita que dos impactos en el mismo instante dejen las vidas en negativo
+	if current_health <= 0:
+		return
+	current_health -= 1
+	print("¡Alerta! Integridad comprometida. Vidas restantes: ", current_health)
+	
+	update_hud_display()
+	
+	if current_health <= 0:
+		print("¡Fallo crítico del sistema! Reiniciando nivel...")
+		set_physics_process(false)
+		# Diferido: no se puede recargar la escena durante el callback de física
+		get_tree().call_deferred("reload_current_scene")
+	else:
+		# Lógica de inmunidad temporal o parpadeo si se desea
+		pass
+
+func update_hud_display() -> void:
+	if hud:
+		if hud.has_method("update_lives"):
+			hud.update_lives(current_health)
+		# Si implementas la barra EMP en el HUD en el futuro:
+		# if hud.has_method("update_emp"): hud.update_emp(emp_energy)
+
+# LÓGICA DE CAMBIO DE FASES Y FILTRADO DE CAPAS DE COLISIÓN
 func set_phase(new_phase: Phase) -> void:
 	current_phase = new_phase
 	
 	match current_phase:
 		Phase.NORMAL:
-			mesh_node.material_override = mat_normal
-			# Choca con todo (Capas 1, 2, 3 y 4)
+			if mesh_node: mesh_node.material_override = mat_normal
 			set_collision_mask_value(1, true)  # Suelo
 			set_collision_mask_value(2, true)  # Pared Verde
 			set_collision_mask_value(3, true)  # Pared Magenta
 			set_collision_mask_value(4, true)  # Pared Naranja
-			if hud: hud.update_phase_display("NORMAL [AZUL]", "#00ffff")
+			if hud and hud.has_method("update_phase_display"): 
+				hud.update_phase_display("NORMAL [AZUL]", "#00ffff")
 
 		Phase.STDIN: # Verde Matrix
-			mesh_node.material_override = mat_stdin
-			# Choca con Suelo, Magenta y Naranja. ¡Desactiva Capa 2 (Pared Verde)!
+			if mesh_node: mesh_node.material_override = mat_stdin
 			set_collision_mask_value(1, true)
-			set_collision_mask_value(2, false) # <-- Atraviesa Pared Verde
+			set_collision_mask_value(2, false) # Atraviesa Pared Verde
 			set_collision_mask_value(3, true)
 			set_collision_mask_value(4, true)
-			if hud: hud.update_phase_display("STDIN [VERDE]", "#00ff00")
+			if hud and hud.has_method("update_phase_display"): 
+				hud.update_phase_display("STDIN [VERDE]", "#00ff00")
 
 		Phase.STDOUT: # Magenta
-			mesh_node.material_override = mat_stdout
-			# Desactiva Capa 3 (Pared Magenta)
+			if mesh_node: mesh_node.material_override = mat_stdout
 			set_collision_mask_value(1, true)
 			set_collision_mask_value(2, true)
-			set_collision_mask_value(3, false) # <-- Atraviesa Pared Magenta
+			set_collision_mask_value(3, false) # Atraviesa Pared Magenta
 			set_collision_mask_value(4, true)
-			if hud: hud.update_phase_display("STDOUT [MAGENTA]", "#ff00ff")	
+			if hud and hud.has_method("update_phase_display"): 
+				hud.update_phase_display("STDOUT [MAGENTA]", "#ff00ff")	
 
 		Phase.STDERR: # Naranja Glitch
-			mesh_node.material_override = mat_stderr
-			# Desactiva Capa 4 (Pared Naranja)
+			if mesh_node: mesh_node.material_override = mat_stderr
 			set_collision_mask_value(1, true)
 			set_collision_mask_value(2, true)
 			set_collision_mask_value(3, true)
-			set_collision_mask_value(4, false) # <-- Atraviesa Pared Naranja
-			if hud: hud.update_phase_display("STDERR [NARANJA]", "#ff6600")
+			set_collision_mask_value(4, false) # Atraviesa Pared Naranja
+			if hud and hud.has_method("update_phase_display"): 
+				hud.update_phase_display("STDERR [NARANJA]", "#ff6600")

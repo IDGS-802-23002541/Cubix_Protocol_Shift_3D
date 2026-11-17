@@ -13,7 +13,7 @@ func _on_body_entered(body: Node3D) -> void:
 			print("¡Pirámide destruida por sobrecarga STDERR!")
 			queue_free() # Elimina la pirámide del juego
 		else:
-			# Si está en cualquier otro color (Normal, Verde, Magenta), el jugador pierde/reinicia
+			# Si está en cualquier otro color (Normal, Verde, Magenta), el jugador pierde una vida
 			print("¡CU-206 sufrio un error critico por Malware!")
-			# Diferido: no se puede liberar/recargar durante el callback de física
-			get_tree().call_deferred("reload_current_scene") # Reinicia el nivel
+			body.take_damage() # Resta una vida; solo reinicia el nivel si llega a 0
+			queue_free() # Elimina la pirámide tras el impacto
